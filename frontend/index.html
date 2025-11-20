@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Email Marketing - Enhanced</title>
+  <style>
+    body{ font-family: Arial; padding:20px; }
+    .card{ border:1px solid #ddd; padding:12px; margin-bottom:12px; border-radius:8px; }
+    button{ padding:6px 10px; }
+  </style>
+</head>
+<body>
+  <h1>AI for Automated Email Marketing (Enhanced)</h1>
+
+  <div class="card">
+    <h3>Load Users</h3>
+    <button onclick="loadUsers()">Load</button>
+    <pre id="users"></pre>
+  </div>
+
+  <div class="card">
+    <h3>Segmentation</h3>
+    <button onclick="seg()">Run Segmentation</button>
+    <pre id="segout"></pre>
+  </div>
+
+  <div class="card">
+    <h3>Generate Email</h3>
+    Segment: <input id="segId" value="0" size="2"> Name: <input id="name" value="Customer" size="10">
+    Topic: <input id="topic" value="Festive Offer" size="20">
+    <button onclick="genEmail()">Generate</button>
+    <pre id="emailout"></pre>
+  </div>
+
+  <div class="card">
+    <h3>Collaborative Recommendations</h3>
+    User ID: <input id="uid" value="1" size="4">
+    <button onclick="recoCollab()">Get Recommendations</button>
+    <pre id="collab"></pre>
+  </div>
+
+  <div class="card">
+    <h3>Complementary Add-on</h3>
+    Product ID: <input id="pid" value="1" size="4">
+    <button onclick="addon()">Get Add-ons</button>
+    <pre id="addonout"></pre>
+  </div>
+
+  <div class="card">
+    <h3>TF-IDF Similar Products</h3>
+    Description: <input id="desc" size="60" value="fast charging power bank for mobile">
+    <button onclick="sim()">Find Similar</button>
+    <pre id="simout"></pre>
+  </div>
+
+<script>
+async function loadUsers(){
+  const r = await fetch('/api/users');
+  document.getElementById('users').textContent = JSON.stringify(await r.json(), null, 2);
+}
+async function seg(){
+  document.getElementById('segout').textContent = 'Running...';
+  const r = await fetch('/api/segment', {method:'POST'});
+  document.getElementById('segout').textContent = JSON.stringify(await r.json(), null, 2);
+}
+async function genEmail(){
+  const seg = document.getElementById('segId').value;
+  const topic = document.getElementById('topic').value;
+  const name = document.getElementById('name').value;
+  const r = await fetch('/api/generate-email', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({segment: seg, topic, name})});
+  const j = await r.json();
+  document.getElementById('emailout').textContent = j.email;
+}
+async function recoCollab(){
+  const uid = document.getElementById('uid').value;
+  const r = await fetch('/api/recommend-collab', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({user_id: Number(uid), top_k:5})});
+  document.getElementById('collab').textContent = JSON.stringify(await r.json(), null, 2);
+}
+async function addon(){
+  const pid = document.getElementById('pid').value;
+  const r = await fetch('/api/recommend-addon', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({product_id: Number(pid)})});
+  document.getElementById('addonout').textContent = JSON.stringify(await r.json(), null, 2);
+}
+async function sim(){
+  const desc = document.getElementById('desc').value;
+  const r = await fetch('/api/similar-products', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({description: desc, top_k:5})});
+  document.getElementById('simout').textContent = JSON.stringify(await r.json(), null, 2);
+}
+</script>
+
+</body>
+</html>
