@@ -1,0 +1,19 @@
+# Ignore backend generated files
+backend/node_modules/
+backend/.env
+backend/users.csv
+backend/segments.json
+backend/__pycache__/
+backend/ml/__pycache__/
+
+# Ignore Python cache anywhere
+__pycache__/
+*.pyc
+
+# Ignore environment files anywhere
+.env
+.env.*
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
